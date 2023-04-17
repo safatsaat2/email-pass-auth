@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import app from '../firebase/firebase.config';
-import {  getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {  getAuth, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 
 const auth = getAuth(app)
 
@@ -10,6 +10,23 @@ const Login = () => {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const emailRef = useRef()
+
+
+    const handleResetPass = () => {
+        const email = emailRef.current.value;
+        if(!email){
+            alert("Please Enter your Email")
+            return
+        }
+        sendPasswordResetEmail(auth, email)
+        .then(() => {
+            alert("PLease check your email")
+        })
+        .catch(error => {
+            setError(error.message)
+        })
+    }
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -35,7 +52,7 @@ const Login = () => {
             <Form onSubmit={handleLogin}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" name='email' placeholder="Enter email" />
+                    <Form.Control type="email" name='email' ref={emailRef} placeholder="Enter email" />
                     <Form.Text className="text-muted">
                         We'll never share your email with anyone else.
                     </Form.Text>
@@ -54,6 +71,7 @@ const Login = () => {
                 <p>{error}</p>
                 <p>{success}</p>
             </Form>
+            <h4><small>Forget Password? Please <button className='btn btn-link' onClick={handleResetPass}>Reset</button></small></h4>
         </div>
     );
 };
