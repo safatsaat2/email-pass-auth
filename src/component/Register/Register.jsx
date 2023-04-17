@@ -1,6 +1,6 @@
 import React from 'react';
 import app from '../firebase/firebase.config';
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification } from "firebase/auth";
 
 const auth = getAuth(app)
 
@@ -11,6 +11,9 @@ const Register = () => {
     const handlePasswordBlur = (e) => {
         // console.log(e.target.value)
     }
+    const emailVerification = (user) => {
+        sendEmailVerification(user)
+    }
     const handleSubmit = (e) => {
         e.preventDefault();
         const email = e.target.email.value;
@@ -18,7 +21,8 @@ const Register = () => {
         createUserWithEmailAndPassword(auth, email, pass)
         .then((result) => {
             const loggedUser = result.user;
-            console.log(loggedUser)
+            console.log(loggedUser.email);
+            emailVerification(loggedUser)
         })
         .catch(error => {
             console.error(error)

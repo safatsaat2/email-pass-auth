@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import app from '../firebase/firebase.config';
+import {  getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
+const auth = getAuth(app)
 
 const Login = () => {
+
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -10,6 +17,16 @@ const Login = () => {
         const email = form.email.value;
         const pass = form.pass.value;
         console.log(email, pass)
+
+        signInWithEmailAndPassword(auth, email, pass)
+        .then(result => {
+            const loggedUser = result.user;
+            setSuccess("User Log in Successful");
+            setError('');
+        })
+        .catch(error=>{
+            setError(error)
+        })
     }
 
     return (
@@ -34,6 +51,8 @@ const Login = () => {
                 <Button variant="primary" type="submit">
                     Log in
                 </Button>
+                <p>{error}</p>
+                <p>{success}</p>
             </Form>
         </div>
     );
